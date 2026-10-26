@@ -69,6 +69,16 @@ td:nth-child(2),th:nth-child(2){text-align:left}tr+tr td{border-top:1px solid va
 .ev{display:flex;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.ev b{min-width:42px;color:var(--ac)}
 .lu{font-size:13px;color:var(--mu);line-height:1.7;margin-top:8px}.lu b{color:var(--tx)}
 @media(max-width:700px){.cg{grid-template-columns:1fr}}
+#adm{display:none;position:fixed;inset:0;z-index:50;background:rgba(5,7,16,.82);backdrop-filter:blur(6px);overflow:auto;padding:max(20px,env(safe-area-inset-top)) 16px 30px}
+#adm.on{display:block}
+.ap{max-width:640px;margin:0 auto;background:#10152e;border:1px solid var(--line);border-radius:20px;padding:22px}
+.ap h2{margin:0 0 6px}.ap h4{margin:18px 0 6px;color:var(--ac);font-size:12px;text-transform:uppercase;letter-spacing:1.5px}
+.ap input{margin:4px 0;width:100%;min-width:0;border-radius:10px}
+.am{color:var(--mu);font-size:13px;margin:8px 0}
+.ab{background:var(--ac);color:#04130d;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;margin:8px 6px 0 0}
+.ab.s{padding:5px 10px;font-size:12px;margin:0 0 0 6px}.ab.r{background:var(--loss);color:#fff}.ab.g{background:var(--card);color:var(--tx);border:1px solid var(--line)}
+.ar{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 footer{text-align:center;color:var(--mu);font-size:12px;margin-top:40px}
 @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}input{margin-left:0;width:100%}.grid{grid-template-columns:1fr}}
 </style>
@@ -76,7 +86,7 @@ footer{text-align:center;color:var(--mu);font-size:12px;margin-top:40px}
 <body>
 <canvas id="bg"></canvas>
 <div class="wrap">
-<nav><div class="logo">PITCH<b>CENTRE</b></div><div class="live"><span class="dot"></span>Matchweek 9 · Premier League</div></nav>
+<nav><div class="logo">PITCH<b>CENTRE</b></div><div class="live"><span class="dot"></span>Matchweek 9 · Premier League</div><button class="tab" id="adb">⚙ Admin</button></nav>
 <section class="hero"><h1>Every match.<br><span>Every detail.</span></h1><p>Latest Premier League results, upcoming fixtures with win probabilities, and the form table – all in one place, shown in your local time.</p></section>
 <section class="cl">
 <h3><span class="fl es"></span>La Liga · El Clásico · Full time</h3>
@@ -101,11 +111,16 @@ footer{text-align:center;color:var(--mu);font-size:12px;margin-top:40px}
 <div class="tw"><table id="tb"></table></div>
 <footer>Results and fixtures from the latest Premier League round · Tap any match for details · Win probabilities are pre-match estimates.</footer>
 </div>
+<div id="adm"><div class="ap"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Admin panel</h2><button class="ab g s" id="adx">Close</button></div><div id="adbody"></div></div></div>
 <script>
 var C={IPS:["Ipswich Town","#2a6ebb"],NFO:["Nottingham Forest","#d12b2b"],AVL:["Aston Villa","#7b1e3a"],MCI:["Manchester City","#6cabdd"],ARS:["Arsenal","#e41e26"],EVE:["Everton","#274488"],COV:["Coventry City","#4aa3df"],FUL:["Fulham","#333"],CFC:["Chelsea","#1a3fa0"],TOT:["Tottenham","#132257"],CRY:["Crystal Palace","#1b458f"],NEW:["Newcastle United","#333"],HUL:["Hull City","#e08a00"],BRE:["Brentford","#d4281f"],LFC:["Liverpool","#c8102e"],BRI:["Brighton","#0057b8"],MUN:["Manchester United","#da291c"],BOU:["Bournemouth","#b50e12"],SUN:["Sunderland","#c8102e"],LEE:["Leeds United","#d1a800"]};
 var M=[
 ["IPS","NFO",1,1,"2026-10-23T19:00:00Z"],["AVL","MCI",2,1,"2026-10-24T11:30:00Z"],["ARS","EVE",2,0,"2026-10-24T14:00:00Z"],["COV","FUL",0,1,"2026-10-24T14:00:00Z"],["CFC","TOT",0,2,"2026-10-24T16:30:00Z"],["CRY","NEW",0,2,"2026-10-25T14:00:00Z"],["HUL","BRE",1,1,"2026-10-25T14:00:00Z"],["LFC","BRI",2,0,"2026-10-25T14:00:00Z"],["MUN","BOU",0,3,"2026-10-25T14:00:00Z"],["SUN","LEE",0,0,"2026-10-25T16:30:00Z"],
 ["CFC","MUN",null,null,"2026-10-31T12:30:00Z",52.6,24,23.4],["BOU","LEE",null,null,"2026-10-31T15:00:00Z",44.1,27.4,28.5],["BRE","NFO",null,null,"2026-10-31T15:00:00Z",47.7,25.8,26.5],["COV","SUN",null,null,"2026-10-31T15:00:00Z",32,27.4,40.6],["HUL","IPS",null,null,"2026-10-31T15:00:00Z",36.8,27.4,35.8],["MCI","BRI",null,null,"2026-10-31T15:00:00Z",57.7,21.6,20.7],["TOT","CRY",null,null,"2026-10-31T17:30:00Z",62.5,20.7,16.8],["AVL","FUL",null,null,"2026-10-31T20:00:00Z",48.9,25.3,25.8],["LFC","ARS",null,null,"2026-11-01T16:30:00Z",31,26.9,42.1],["NEW","EVE",null,null,"2026-11-02T20:00:00Z",42.9,26,31.1]];
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var CT=ld("pc_teams",{}),CM=ld("pc_matches",[]),HID=ld("pc_hidden",[]),BASE=M.length;
+for(var k in CT)C[k]=CT[k];M=M.concat(CM);var OV=ld("pc_ov",{}),TX=ld("pc_txt",{});M.forEach(function(m){var o=OV[m[0]+m[1]+m[4]];if(o){m[2]=o[0];m[3]=o[1]}});
 var tab="res",g=document.getElementById("g");
 function fd(s){return new Date(s).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
 function cr(k){return '<span class="crest" style="background:'+C[k][1]+'">'+k+'</span>'}
@@ -113,15 +128,15 @@ function card(m,i){var d=m[2]!==null,h=d&&m[2]>m[3],a=d&&m[3]>m[2];
 var s='<div class="m" onclick="this.classList.toggle(\'open\')"><div class="mh"><span>'+fd(m[4])+'</span><span class="badge '+(d?'ft':'up')+'">'+(d?'Full time':'Upcoming')+'</span></div>';
 s+='<div class="row"><span class="tm">'+cr(m[0])+C[m[0]][0]+'</span><span class="sc '+(h?'w':'')+'">'+(d?m[2]:'–')+'</span></div>';
 s+='<div class="row"><span class="tm">'+cr(m[1])+C[m[1]][0]+'</span><span class="sc '+(a?'w':'')+'">'+(d?m[3]:'–')+'</span></div>';
-if(!d){s+='<div class="pb"><i style="width:'+m[5]+'%;background:var(--ac)"></i><i style="width:'+m[6]+'%;background:var(--draw)"></i><i style="width:'+m[7]+'%;background:var(--ac2)"></i></div><div class="pl"><span>'+m[0]+' '+m[5]+'%</span><span>Draw '+m[6]+'%</span><span>'+m[1]+' '+m[7]+'%</span></div>';
+if(!d&&m[5]===undefined){s+='<div class="det"><b>Kick-off:</b> '+fd(m[4])+'</div>'}else if(!d){s+='<div class="pb"><i style="width:'+m[5]+'%;background:var(--ac)"></i><i style="width:'+m[6]+'%;background:var(--draw)"></i><i style="width:'+m[7]+'%;background:var(--ac2)"></i></div><div class="pl"><span>'+m[0]+' '+m[5]+'%</span><span>Draw '+m[6]+'%</span><span>'+m[1]+' '+m[7]+'%</span></div>';
 s+='<div class="det"><b>Kick-off:</b> '+fd(m[4])+'<br><b>Venue:</b> '+C[m[0]][0]+' home ground<br><b>Favourite:</b> '+(m[5]>m[7]?C[m[0]][0]:C[m[1]][0])+' ('+Math.max(m[5],m[7])+'% win chance)</div>'}
 else{var r=h?C[m[0]][0]+' won':a?C[m[1]][0]+' won':'Draw';s+='<div class="det"><b>Result:</b> '+r+' ('+m[2]+'–'+m[3]+')<br><b>Total goals:</b> '+(m[2]+m[3])+'<br><b>Clean sheet:</b> '+(m[3]===0?C[m[0]][0]:m[2]===0?C[m[1]][0]:'None')+'<br><b>Played:</b> '+fd(m[4])+'</div>'}
 return s+'</div>'}
 function render(){var q=document.getElementById("q").value.toLowerCase();
-g.innerHTML=M.filter(function(m){var d=m[2]!==null;return(tab==="all"||(tab==="res")===d)&&(C[m[0]][0]+C[m[1]][0]).toLowerCase().indexOf(q)>-1}).map(card).join("")||'<p style="color:var(--mu)">No matches found.</p>'}
+g.innerHTML=M.filter(function(m){var d=m[2]!==null;if(HID.indexOf(m[0]+m[1]+m[4])>-1)return false;return(tab==="all"||(tab==="res")===d)&&(C[m[0]][0]+C[m[1]][0]).toLowerCase().indexOf(q)>-1}).map(card).join("")||'<p style="color:var(--mu)">No matches found.</p>'}
 document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("on")});b.classList.add("on");tab=b.dataset.t;render()}});
 document.getElementById("q").oninput=render;render();
-var R=M.filter(function(m){return m[2]!==null}),gl=0,cs=0;R.forEach(function(m){gl+=m[2]+m[3];if(m[2]===0)cs++;if(m[3]===0)cs++});
+var R=M.filter(function(m){return m[2]!==null&&HID.indexOf(m[0]+m[1]+m[4])<0}),gl=0,cs=0;R.forEach(function(m){gl+=m[2]+m[3];if(m[2]===0)cs++;if(m[3]===0)cs++});
 function cu(id,v,dec){var e=document.getElementById(id),n=0,st=v/40;var t=setInterval(function(){n+=st;if(n>=v){n=v;clearInterval(t)}e.textContent=dec?n.toFixed(1):Math.round(n)},25)}
 cu("s1",R.length);cu("s2",gl);cu("s3",gl/R.length,1);cu("s4",cs);
 var T={};R.forEach(function(m){[[m[0],m[2],m[3]],[m[1],m[3],m[2]]].forEach(function(x){var t=T[x[0]]=T[x[0]]||{p:1*0,w:0,d:0,l:0,gf:0,ga:0,pts:0};t.p++;t.gf+=x[1];t.ga+=x[2];if(x[1]>x[2]){t.w++;t.pts+=3}else if(x[1]===x[2]){t.d++;t.pts++}else t.l++})});
@@ -136,6 +151,50 @@ document.getElementById("clst").innerHTML=S.map(function(s){var t=(s[1]+s[2])||1
 var E=[[41,"⚽","Real Madrid goal – 0–1"],[46,"🟨","Yellow card – Real Madrid"],[61,"⚽","Barcelona goal – 1–1"],[84,"🟨","Yellow card – Barcelona"],[87,"⚽","Real Madrid goal – 1–2 (winner)"],[90,"🟨","Yellow cards – 2 Real Madrid, 2 Barcelona"]];
 document.getElementById("clev").innerHTML='<b style="font-size:13px;color:var(--mu);text-transform:uppercase;letter-spacing:1px">Key events</b>'+E.map(function(e){return'<div class="ev"><b>'+e[0]+"′</b><span>"+e[1]+' '+e[2]+'</span></div>'}).join("");
 document.getElementById("clu").innerHTML='<b>Barcelona:</b> Garcia; Cancelo, Cubarsí, Martín, Espart; Pedri, Rodri, Fermín; Yamal, Raphinha, Gordon<br><b>Real Madrid:</b> Lunin; Valverde, Konaté, Huijsen, Cucurella; Güler, Tchouaméni, B. Silva, Bellingham; Mbappé, Diomande'})();
+(function(){
+var ad=document.getElementById("adm"),bd=document.getElementById("adbody"),ok=false,EDI=-1,rc=false;
+try{ok=sessionStorage.getItem("pc_ok")==="1"}catch(e){}
+function ss(k,x){try{sessionStorage.setItem(k,x)}catch(e){}}
+function esc(t){return String(t).replace(/[&<>"']/g,function(c){return"&#"+c.charCodeAt(0)+";"})}
+function rl(){ss("pc_open","1");location.reload()}
+function v(id){return document.getElementById(id).value.trim()}
+function say(t){var e=document.getElementById("amsg");if(e)e.textContent=t}
+var TS=[[".hero p","Home page intro text"],[".big-s","El Cl\u00e1sico score text"],["footer","Footer text"]];
+function draw(){
+if(!ok){bd.innerHTML='<p class="am">Enter the admin password.</p><input id="apw" type="password" placeholder="Password"><button class="ab" id="alg">Log in</button><p class="am" id="amsg"></p>';
+document.getElementById("alg").onclick=function(){if(v("apw")==="12345678909"||v("apw")===ld("pc_pw","")){ok=true;ss("pc_ok","1");draw()}else say("Wrong password")};return}
+var rows=M.map(function(m,i){var k=m[0]+m[1]+m[4],h=HID.indexOf(k)>-1;
+if(i===EDI)return'<div class="ar"><span>'+esc(m[0])+' <input id="eh" type="number" min="0" style="width:62px" value="'+(m[2]===null?"":m[2])+'"> \u2013 <input id="ea" type="number" min="0" style="width:62px" value="'+(m[3]===null?"":m[3])+'"> '+esc(m[1])+'</span><span><button class="ab s" data-sv="'+i+'">Save</button><button class="ab s g" data-x="1">Cancel</button></span></div>';
+return'<div class="ar"><span'+(h?' style="opacity:.45"':'')+'>'+esc(m[0])+' '+(m[2]===null?'vs':m[2]+'\u2013'+m[3])+' '+esc(m[1])+' <small style="color:var(--mu)">'+fd(m[4])+'</small></span><span><button class="ab s g" data-e="'+i+'">Edit</button><button class="ab s" data-i="'+i+'">'+(h?'Show':'Hide')+'</button>'+(i>=BASE?'<button class="ab s r" data-d="'+(i-BASE)+'">Delete</button>':'')+'</span></div>'}).join("");
+var tx=TS.map(function(t,j){return'<label class="am">'+t[1]+'</label><input id="tx'+j+'" value="'+esc(document.querySelector(t[0]).textContent.trim())+'">'}).join("");
+bd.innerHTML='<p class="am" id="amsg"></p><h4>Visitors</h4><div class="am" id="vis">Loading\u2026</div><h4>Add a match</h4><div class="f2"><input id="fhc" placeholder="Home code (e.g. ARS)" maxlength="3"><input id="fhn" placeholder="Home team name"><input id="fac" placeholder="Away code (e.g. CHE)" maxlength="3"><input id="fan" placeholder="Away team name"><input id="fhs" type="number" min="0" placeholder="Home score"><input id="fas" type="number" min="0" placeholder="Away score"></div><input id="fdt" type="datetime-local"><button class="ab" id="aadd">Add match</button><h4>All matches (edit scores, hide, delete)</h4>'+rows+'<h4>Site text</h4>'+tx+'<button class="ab" id="atx">Save text</button><h4>Settings</h4><input id="npw" type="password" placeholder="New admin password"><button class="ab" id="apwb">Change password</button><button class="ab g" id="aout">Log out</button><button class="ab r" id="ares">Reset all changes</button><p class="am">Edits are saved in this browser only. The password is a simple lock, not real security.</p>';
+document.getElementById("aadd").onclick=function(){var hc=v("fhc").toUpperCase().slice(0,3),ac=v("fac").toUpperCase().slice(0,3);
+if(!hc||!ac||!v("fhn")||!v("fan")||!v("fdt")){say("Please fill team codes, team names and date.");return}
+[[hc,v("fhn")],[ac,v("fan")]].forEach(function(t){if(!C[t[0]]){CT[t[0]]=C[t[0]]=[t[1],"hsl("+(t[0].charCodeAt(0)*37%360)+",55%,38%)"]}});
+var hs=v("fhs"),as=v("fas"),dn=hs!==""&&as!=="";
+CM.push([hc,ac,dn?+hs:null,dn?+as:null,new Date(v("fdt")).toISOString()]);sv("pc_teams",CT);sv("pc_matches",CM);rl()};
+document.getElementById("atx").onclick=function(){TS.forEach(function(t,j){TX[t[0]]=v("tx"+j)});sv("pc_txt",TX);rl()};
+document.getElementById("apwb").onclick=function(){if(v("npw").length<4){say("Use at least 4 characters.");return}sv("pc_pw",v("npw"));say("Password changed. The new one works from now on.")};
+document.getElementById("aout").onclick=function(){ok=false;ss("pc_ok","0");draw()};
+document.getElementById("ares").onclick=function(){if(!rc){rc=true;this.textContent="Click again to confirm reset";return}sv("pc_matches",[]);sv("pc_teams",{});sv("pc_hidden",[]);sv("pc_ov",{});sv("pc_txt",{});rl()};
+vrf()}
+bd.onclick=function(e){var t=e.target,d=t.dataset;if(!d)return;
+if(d.i!==undefined){var m=M[+d.i],k=m[0]+m[1]+m[4],j=HID.indexOf(k);j>-1?HID.splice(j,1):HID.push(k);sv("pc_hidden",HID);rl()}
+else if(d.d!==undefined){CM.splice(+d.d,1);sv("pc_matches",CM);rl()}
+else if(d.e!==undefined){EDI=+d.e;draw()}
+else if(d.x!==undefined){EDI=-1;draw()}
+else if(d.sv!==undefined){var a=v("eh"),b=v("ea"),n=M[+d.sv];OV[n[0]+n[1]+n[4]]=(a===""||b==="")?[null,null]:[+a,+b];sv("pc_ov",OV);rl()}};
+function op(){ad.classList.add("on");draw()}
+document.getElementById("adb").onclick=op;
+document.getElementById("adx").onclick=function(){ad.classList.remove("on")};
+try{if(sessionStorage.getItem("pc_open")==="1"){sessionStorage.removeItem("pc_open");op()}}catch(e){}
+})();
+var VIS={db:null};
+function vrf(){var e=document.getElementById("vis");if(!e)return;
+if(!VIS.db){e.textContent="Visitor counting is not available in this view. It works on the published claude.ai page for signed-in viewers only.";return}
+VIS.db.collection("visits").get().then(function(q){var t=0;q.docs.forEach(function(d){t+=d.data().views||0});e.innerHTML='<b style="color:var(--tx);font-size:22px">'+q.size+'</b> unique visitors &nbsp;\u00b7&nbsp; <b style="color:var(--tx);font-size:22px">'+t+'</b> total visits'}).catch(function(){e.textContent="Could not read visitor data."})}
+(async function(){try{if(!window.claude)return;var db=await claude.use("db"),us=await claude.use("user");if(!db||!us)return;var id=await us.id(),r=db.doc("visits/"+id),sn=await r.get();await r.set({views:(sn.exists?(sn.data().views||0):0)+1,last:Date.now()});VIS.db=db;vrf()}catch(e){}})();
+for(var q in TX){var el=document.querySelector(q);if(el)el.textContent=TX[q]}
 var cv=document.getElementById("bg"),cx=cv.getContext("2d"),W,H,P=[];
 function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;P=[];for(var i=0;i<Math.min(70,W/18);i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,r:Math.random()*2+1})}
 rs();addEventListener("resize",rs);var ang=0;
